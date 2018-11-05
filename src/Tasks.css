@@ -1,0 +1,121 @@
+@import './config.css';
+
+.panelWrapper {
+    background-color: white;
+    height: 800px;
+    border-radius: 4px;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.20);
+    padding: 0 16px;
+}
+
+    .panelTitle {
+        color: var(--cerulean);
+        font-weight: 500;
+        padding: 32px 0 16px;
+    }
+
+    .taskInputWrapper {
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid var(--mercury);
+        position: relative;
+    }
+
+        .plusSign {
+            stroke: var(--cerulean);
+            stroke-width: 3;
+        }
+
+        .addBtn {
+            display: none;
+            color: var(--mercury);
+            font-weight: 900;
+        }
+
+        .addBtn.active {
+            display: block;
+            color: var(--cerulean);
+            cursor: pointer;
+        }
+
+        .blueBottomBorder {
+            position: absolute;
+            left: 0;
+            bottom: -1px;
+            height: 2px;
+            width: 0;
+            background-color: var(--cerulean);
+        }
+
+        .taskInput {
+            margin: 0 10px 0 14px;
+            border: none;
+            padding: 18px 0;
+            width: 89%;
+            color: var(--doveGray);
+            font-size: 18px;
+        }
+
+        .taskInput:focus {
+            outline: none;
+        }
+
+        .taskInput:focus + .addBtn {
+            display: block;
+        }
+
+        .taskInput:focus ~ .blueBottomBorder {
+            width: 100%;
+            animation: slidein 1s;
+        }
+
+        .taskInput::placeholder {
+            color: var(--silver);
+            font-size: 18px;
+        }
+
+        .taskListItem {
+            position: relative;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            color: var(--doveGray);
+            cursor: pointer;
+            border-bottom: 1px solid var(--mercury);
+            transition: text-decoration 5s;
+        }
+
+        .taskListItem.completed span {
+            color: var(--silver);
+            text-decoration: line-through;
+        }
+
+        .taskListItem.completed .completedDate {
+            color: var(--silver);
+            position: absolute;
+            right: 0;
+            font-size: 12px;
+        }
+
+        .taskListItem.completed::before {
+            background-color: var(--cerulean);
+            content: "\2713";
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            animation: turnin 1s;
+        }
+
+        .taskListItem::before {
+            content: "";
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--cerulean);
+            margin-right: 10px;
+            animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+            transform: translate3d(0, 0, 0);
+        }

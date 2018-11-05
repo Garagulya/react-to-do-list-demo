@@ -1,0 +1,25 @@
+@import './config.css';
+
+.app {
+  background-color: var(--cerulean);
+  height: 100%;
+  font-size: 18px;
+}
+
+  .appWrapper {
+    display: block;
+    width: 50%;
+    margin: 0 auto 65px;
+  }
+
+  @media only screen and (max-width: 992px) {
+    .appWrapper {
+      width: 75%;
+    }
+  }
+
+    .appTitle {
+      padding: 32px 0 16px 16px;
+      color: white;
+      font-weight: 500;
+    }
