@@ -7,4 +7,8 @@ With this demo it is possible to:
 - see the completion date of each completed task;
 - uncomplete a task (it goes to the end of the uncompleted task list above).
 
-If a browser window is refreshed, all completed tasks are removed and not displayed anymore. All completed tasks are automatically removed after 1 minute of completion time. All completed tasks are ordered by completion time.
+Also:
+- If a browser window is refreshed, all completed tasks are removed and not displayed anymore.
+- All completed tasks are automatically removed after 1 minute of completion time. 
+- All completed tasks are ordered by completion time.
+- Local storage is used to save the list of the uncompleted tasks.
