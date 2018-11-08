@@ -1,7 +1,7 @@
 @import './config.css';
 
 .app {
-  background-color: var(--cerulean);
+  background-color: var(--malibu);
   height: 100%;
   font-size: 18px;
 }

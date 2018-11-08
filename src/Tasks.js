@@ -1,72 +1,73 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
 
-import { ReactComponent as PlusIcon } from './add.svg';
+import TaskInput from './TaskInput';
 import './Tasks.css';
-import { ENTER_KEY_CODE, MINUTE_IN_MILLISECONDS } from "./constants";
+import { MINUTE_IN_MILLISECONDS } from "./constants";
 
 export class Tasks extends PureComponent {
     state = {
-        taskText: '',
-        activeTasks: JSON.parse(localStorage.getItem('activeTasks')) || [],
+        activeTasks: [],
         completedTasks: [],
     };
 
     componentDidMount() {
+        this.setState({activeTasks: JSON.parse(localStorage.getItem('activeTasks')) || []});
         if (typeof window !== 'undefined') {
-            window.addEventListener('keyup', this.listenForEnter);
+            window.addEventListener('beforeunload', this.saveTasksToLocalStorage);
         }
     }
 
     componentWillUnmount() {
+        this.saveTasksToLocalStorage();
         if (typeof window !== 'undefined') {
-            window.removeEventListener('keyup', this.listenForEnter, true);
+            window.removeEventListener('beforeunload', this.saveTasksToLocalStorage);
         }
     }
 
-    listenForEnter = (event) => {
-        if (event.keyCode === ENTER_KEY_CODE && this.state.taskText) {
-            this.addNewTask();
-        }
+    saveTasksToLocalStorage = () => {
+        localStorage.setItem('activeTasks', JSON.stringify(this.state.activeTasks));
     };
 
-    handleInputChange = (e) => {
-        this.setState({taskText: e.target.value});
-    };
-
-    addNewTask = () => {
-        const {taskText, activeTasks} = this.state;
-        const task = {
-            id: moment().format('x'), // unix timestamp
-            date: moment(),
+    addNewTask = (taskText) => {
+        const newTask = {
+            id: moment().format('x'), // unix timestamp in milliseconds (now)
+            activationDate: moment(), // date (now)
             name: taskText
         };
-        activeTasks.push(task);
-        this.setState({taskText: '', activeTasks});
-        localStorage.setItem('activeTasks', JSON.stringify(activeTasks));
+        this.setState(prevState => ({
+            activeTasks: [...prevState.activeTasks, newTask]
+        }));
     };
 
     completeTask = (task) => () => {
-        const {activeTasks, completedTasks} = this.state;
-        completedTasks.push(task);
-        const filteredActiveTasks = this.filterTasks(activeTasks, task.id);
-        this.setState({activeTasks: filteredActiveTasks, completedTasks});
-        setTimeout(this.deleteCompletedTask(task.id), MINUTE_IN_MILLISECONDS); //@todo нужно переделать с записью completionTime
-        localStorage.setItem('activeTasks', JSON.stringify(filteredActiveTasks));
+        const filteredActiveTasks = this.filterTasks(this.state.activeTasks, task.id);
+        const taskWithCompletionTime = Object.assign(task, {completionTime: moment().format('x')});
+        this.setState(prevState => ({
+            activeTasks: filteredActiveTasks,
+            completedTasks: [...prevState.completedTasks, taskWithCompletionTime]
+        }));
+        setTimeout(this.deleteCompletedTask(task.id), MINUTE_IN_MILLISECONDS);
     };
 
     deleteCompletedTask = (taskIdToDelete) => () => {
         const {completedTasks} = this.state;
-        const filteredCompletedTasks = this.filterTasks(completedTasks, taskIdToDelete);
-        this.setState({completedTasks: filteredCompletedTasks});
+        const taskToDelete = completedTasks.find(task => task.id === taskIdToDelete);
+        if (taskToDelete) {
+            const timePassedSinceCompletion = moment().format('x') - taskToDelete.completionTime;
+            if (timePassedSinceCompletion >= MINUTE_IN_MILLISECONDS) {
+                const filteredCompletedTasks = this.filterTasks(completedTasks, taskIdToDelete);
+                this.setState({completedTasks: filteredCompletedTasks});
+            }
+        }
     };
 
     activateTask = (task) => () => {
-        const {activeTasks, completedTasks} = this.state; // проверить про slice
-        activeTasks.push(task);
-        const filteredCompletedTasks = this.filterTasks(completedTasks, task.id);
-        this.setState({activeTasks, completedTasks: filteredCompletedTasks});
-        localStorage.setItem('activeTasks', JSON.stringify(activeTasks));
+        const filteredCompletedTasks = this.filterTasks(this.state.completedTasks, task.id);
+        this.setState(prevState => ({
+            activeTasks: [...prevState.activeTasks, task],
+            completedTasks: filteredCompletedTasks
+        }));
     };
 
     filterTasks = (tasks, taskIdToFilter) => {
@@ -77,36 +78,23 @@ export class Tasks extends PureComponent {
         const {taskText, activeTasks, completedTasks} = this.state;
         return (
             <div className="panelWrapper">
-                <h1 className="panelTitle">Work</h1>
-                <div className="taskInputWrapper">
-                    <PlusIcon className="plusSign" />
-                    <input
-                        type="text"
-                        className="taskInput"
-                        placeholder="Add new task"
-                        value={taskText}
-                        onChange={this.handleInputChange}
-                    />
-                    <div className={`addBtn${taskText && ' active'}`} onClick={this.addNewTask}>
-                        Add
-                    </div>
-                    <div className="blueBottomBorder" />
-                </div>
+                <h1 className="panelTitle">Tasks</h1>
+                <TaskInput taskText={taskText} addNewTask={this.addNewTask} handleInputChange={this.handleInputChange} />
                 <div className="activeTasksWrapper">
-                    {activeTasks.map((task) =>
-                        <div key={task.id} className="taskListItem" onClick={this.completeTask(task)}>
-                            {task.name}
-                        </div>
-                    )}
-                </div>
-                <div className="completedTasksWrapper">
-                    {completedTasks.map((task) => {
-                        const date = moment(task.date).format('MMM D, YYYY');
-                        return <div key={task.id} className="taskListItem completed" onClick={this.activateTask(task)}>
-                            <span>{task.name}</span>
-                            <div className="completedDate">{date}</div>
+                    {activeTasks.map((task) => {
+                        const activationDate = moment(task.activationDate).format('MMM D, YYYY');
+                        return <div key={task.id} className="taskListItem" onClick={this.completeTask(task)}>
+                            <div className="taskText"><span>{task.name}</span></div>
+                            <div className="activationDate">{activationDate}</div>
                         </div>;
                     })}
+                </div>
+                <div className="completedTasksWrapper">
+                    {completedTasks.map((task) =>
+                        <div key={task.id} className="taskListItem completed" onClick={this.activateTask(task)}>
+                            <div className="taskText"><span>{task.name}</span></div>
+                        </div>
+                    )}
                 </div>
             </div>
         );

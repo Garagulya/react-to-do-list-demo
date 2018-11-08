@@ -1,0 +1,59 @@
+.taskInputWrapper {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--mercury);
+    position: relative;
+}
+
+    .plusSign {
+        stroke: var(--malibu);
+        stroke-width: 3;
+    }
+
+    .addBtn {
+        display: none;
+        color: var(--mercury);
+        font-weight: 900;
+    }
+
+    .addBtn.active {
+        display: block;
+        color: var(--malibu);
+        cursor: pointer;
+    }
+
+    .blueBottomBorder {
+        position: absolute;
+        left: 0;
+        bottom: -1px;
+        height: 2px;
+        width: 0;
+        background-color: var(--malibu);
+    }
+
+    .taskInput {
+        margin: 0 10px 0 14px;
+        border: none;
+        padding: 18px 0;
+        width: 89%;
+        color: var(--doveGray);
+        font-size: 18px;
+    }
+
+    .taskInput:focus {
+        outline: none;
+    }
+
+    .taskInput:focus + .addBtn {
+        display: block;
+    }
+
+    .taskInput:focus ~ .blueBottomBorder {
+        width: 100%;
+        animation: slidein 1s;
+    }
+
+    .taskInput::placeholder {
+        color: var(--silver);
+        font-size: 18px;
+    }
