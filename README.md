@@ -1,3 +1,5 @@
+You can try the demo here: [React To Do List](https://garagulya.github.io/react-to-do-list-demo)
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 You can find the most recent version of this guide [here](https://github.com/facebook/create-react-app/blob/master/packages/react-scripts/template/README.md).
 
