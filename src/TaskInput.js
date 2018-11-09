@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 
 import { ReactComponent as PlusIcon } from './add.svg';
 import './TaskInput.css';
-import {ENTER_KEY_CODE} from "./constants";
+import {ENTER_KEY} from "./constants";
 
 export class TaskInput extends PureComponent {
     state = {
@@ -22,7 +22,7 @@ export class TaskInput extends PureComponent {
     }
 
     listenForEnter = (event) => {
-        if (event.keyCode === ENTER_KEY_CODE && this.state.taskText) {
+        if (event.key === ENTER_KEY && this.state.taskText) {
             this.addNewTask();
         }
     };
