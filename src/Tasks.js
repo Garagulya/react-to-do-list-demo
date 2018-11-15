@@ -14,14 +14,14 @@ export class Tasks extends PureComponent {
     componentDidMount() {
         this.setState({activeTasks: JSON.parse(localStorage.getItem('activeTasks')) || []});
         if (typeof window !== 'undefined') {
-            window.addEventListener('beforeunload', this.saveTasksToLocalStorage);
+            window.addEventListener('unload', this.saveTasksToLocalStorage);
         }
     }
 
     componentWillUnmount() {
         this.saveTasksToLocalStorage();
         if (typeof window !== 'undefined') {
-            window.removeEventListener('beforeunload', this.saveTasksToLocalStorage);
+            window.removeEventListener('unload', this.saveTasksToLocalStorage);
         }
     }
 
