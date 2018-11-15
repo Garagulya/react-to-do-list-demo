@@ -13,20 +13,10 @@ export class Tasks extends PureComponent {
 
     componentDidMount() {
         this.setState({activeTasks: JSON.parse(localStorage.getItem('activeTasks')) || []});
-        if (typeof window !== 'undefined') {
-            window.addEventListener('pagehide', this.saveTasksToLocalStorage);
-        }
     }
 
-    componentWillUnmount() {
-        this.saveTasksToLocalStorage();
-        if (typeof window !== 'undefined') {
-            window.removeEventListener('pagehide', this.saveTasksToLocalStorage);
-        }
-    }
-
-    saveTasksToLocalStorage = () => {
-        localStorage.setItem('activeTasks', JSON.stringify(this.state.activeTasks));
+    saveTasksToLocalStorage = (newActiveTasks) => {
+        localStorage.setItem('activeTasks', JSON.stringify(newActiveTasks));
     };
 
     addNewTask = (taskText) => {
@@ -35,9 +25,9 @@ export class Tasks extends PureComponent {
             activationDate: moment(), // date (now)
             name: taskText
         };
-        this.setState(prevState => ({
-            activeTasks: [...prevState.activeTasks, newTask]
-        }));
+        const newActiveTasks = [...this.state.activeTasks, newTask];
+        this.setState({activeTasks: newActiveTasks});
+        this.saveTasksToLocalStorage(newActiveTasks);
     };
 
     completeTask = (task) => () => {
@@ -47,6 +37,7 @@ export class Tasks extends PureComponent {
             activeTasks: filteredActiveTasks,
             completedTasks: [...prevState.completedTasks, taskWithCompletionTime]
         }));
+        this.saveTasksToLocalStorage(filteredActiveTasks);
         setTimeout(this.deleteCompletedTask(task.id), MINUTE_IN_MILLISECONDS);
     };
 
@@ -64,10 +55,12 @@ export class Tasks extends PureComponent {
 
     activateTask = (task) => () => {
         const filteredCompletedTasks = this.filterTasks(this.state.completedTasks, task.id);
-        this.setState(prevState => ({
-            activeTasks: [...prevState.activeTasks, task],
+        const newActiveTasks = [...this.state.activeTasks, task];
+        this.setState({
+            activeTasks: newActiveTasks,
             completedTasks: filteredCompletedTasks
-        }));
+        });
+        this.saveTasksToLocalStorage(newActiveTasks);
     };
 
     filterTasks = (tasks, taskIdToFilter) => {
