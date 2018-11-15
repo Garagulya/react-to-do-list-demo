@@ -2,10 +2,10 @@
 
 .panelWrapper {
     background-color: white;
-    height: 800px;
+    min-height: 800px;
     border-radius: 4px;
-    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.20);
-    padding: 0 16px;
+    box-shadow: 0 8px 15px 0 rgba(0,0,0,0.20);
+    padding: 0 15px;
 }
 
     .panelTitle {
